@@ -1,13 +1,14 @@
 "use client";
 
 import { ApiShell } from "@/components/api/ApiShell";
+import { postGenerate } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 
 export default function CreatoMatePage() {
   return (
-    <ApiShell title="CreatoMate API" onGenerate={() => Promise.resolve()}>
+    <ApiShell title="CreatoMate API" onGenerate={(payload) => postGenerate({ api: "creatomate", payload })}>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Select
           placeholder="Template"
