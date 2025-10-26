@@ -7,6 +7,7 @@ import { startPlainlyRender } from "@/server/clients/plainly";
 export async function POST(req: NextRequest) {
   try {
     const { api, payload } = await req.json();
+    if (!api) return NextResponse.json({ error: "Missing api" }, { status: 400 });
 
     let result: any;
     switch (String(api).toLowerCase()) {
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
         result = await startPlainlyRender(payload);
         break;
       default:
-        return NextResponse.json({ error: "Unknown API" }, { status: 400 });
+        return NextResponse.json({ error: `Unknown API: ${api}` }, { status: 400 });
     }
 
     // Normalize minimal response
@@ -39,9 +40,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(normalized);
   } catch (err: any) {
-    return NextResponse.json(
-      { error: err?.message || "Failed to start generation" },
-      { status: 500 }
-    );
+    const message = err?.message || "Failed to start generation";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

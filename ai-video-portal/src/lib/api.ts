@@ -18,6 +18,13 @@ export async function postGenerate(req: GenerateRequest): Promise<GenerateRespon
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
   });
-  if (!res.ok) throw new Error("Failed to start generation");
+  if (!res.ok) {
+    try {
+      const data = await res.json();
+      throw new Error(data?.error || JSON.stringify(data));
+    } catch {
+      throw new Error("Failed to start generation");
+    }
+  }
   return res.json();
 }

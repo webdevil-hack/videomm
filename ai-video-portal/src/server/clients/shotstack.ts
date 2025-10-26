@@ -5,7 +5,7 @@ export async function startShotstackRender(payload: any) {
   if (!key) throw new Error("SHOTSTACK_API_KEY is not set");
   const body = buildShotstackRequestFromUi(payload);
 
-  const res = await fetch("https://api.shotstack.io/v1/render", {
+  const res = await fetch("https://api.shotstack.io/edit/v1/render", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
