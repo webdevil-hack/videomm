@@ -1,13 +1,17 @@
+import { buildCreatomateRequestFromUi } from "@/server/transformers/creatomate";
+
 export async function startCreatomateRender(payload: any) {
   const key = process.env.CREATOMATE_API_KEY;
   if (!key) throw new Error("CREATOMATE_API_KEY is not set");
+  const body = buildCreatomateRequestFromUi(payload);
+
   const res = await fetch("https://api.creatomate.com/v1/renders", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${key}`,
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(body),
   });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) {

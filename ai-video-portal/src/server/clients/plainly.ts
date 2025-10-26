@@ -1,13 +1,17 @@
+import { buildPlainlyRequestFromUi } from "@/server/transformers/plainly";
+
 export async function startPlainlyRender(payload: any) {
   const key = process.env.PLAINLY_API_KEY;
   if (!key) throw new Error("PLAINLY_API_KEY is not set");
+  const body = buildPlainlyRequestFromUi(payload);
+
   const res = await fetch("https://api.plainlyvideos.com/v1/renders", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${key}`,
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(body),
   });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) {

@@ -8,7 +8,19 @@ import { Select } from "@/components/ui/select";
 
 export default function CreatoMatePage() {
   return (
-    <ApiShell title="CreatoMate API" onGenerate={(payload) => postGenerate({ api: "creatomate", payload })}>
+    <ApiShell
+      title="CreatoMate API"
+      onGenerate={(payload) =>
+        postGenerate({
+          api: "creatomate",
+          payload: {
+            ...payload,
+            template: (document.querySelector('button[aria-haspopup="menu"] span') as HTMLElement)?.innerText || undefined,
+            mapping: (document.querySelector('input[placeholder="Dynamic asset mapping (JSON)"]') as HTMLInputElement)?.value,
+          },
+        })
+      }
+    >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Select
           placeholder="Template"

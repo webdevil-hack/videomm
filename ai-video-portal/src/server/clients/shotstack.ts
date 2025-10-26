@@ -5,20 +5,34 @@ export async function startShotstackRender(payload: any) {
   if (!key) throw new Error("SHOTSTACK_API_KEY is not set");
   const body = buildShotstackRequestFromUi(payload);
 
-  const env = process.env.SHOTSTACK_ENV || "v1"; // use "stage" for staging keys
-  const endpoint = `https://api.shotstack.io/${env}/render`;
+  const env = process.env.SHOTSTACK_ENV || "edit/v1";
+  const tryEndpoints = [
+    `https://api.shotstack.io/${env}/render`,
+    // Fallback common alternative for staging
+    `https://api.shotstack.io/stage/v1/render`,
+  ];
 
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": key,
-    },
-    body: JSON.stringify(body),
-  });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(json?.message || json?.error || `Shotstack request failed (${res.status})`);
+  let lastError: any;
+  for (const endpoint of tryEndpoints) {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": key,
+        },
+        body: JSON.stringify(body),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        lastError = new Error(json?.message || json?.error || `Shotstack request failed (${res.status})`);
+        continue;
+      }
+      return json;
+    } catch (e) {
+      lastError = e;
+      continue;
+    }
   }
-  return json;
+  throw lastError || new Error("Shotstack request failed");
 }
