@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+export const runtime = "nodejs";
 import { startShotstackRender } from "@/server/clients/shotstack";
 import { startCreatomateRender } from "@/server/clients/creatomate";
 import { startTavusRender } from "@/server/clients/tavus";

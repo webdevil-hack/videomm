@@ -5,7 +5,10 @@ export async function startShotstackRender(payload: any) {
   if (!key) throw new Error("SHOTSTACK_API_KEY is not set");
   const body = buildShotstackRequestFromUi(payload);
 
-  const res = await fetch("https://api.shotstack.io/edit/v1/render", {
+  const env = process.env.SHOTSTACK_ENV || "v1"; // use "stage" for staging keys
+  const endpoint = `https://api.shotstack.io/${env}/render`;
+
+  const res = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -15,7 +18,7 @@ export async function startShotstackRender(payload: any) {
   });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(json?.message || json?.error || "Shotstack request failed");
+    throw new Error(json?.message || json?.error || `Shotstack request failed (${res.status})`);
   }
   return json;
 }

@@ -19,12 +19,14 @@ export async function postGenerate(req: GenerateRequest): Promise<GenerateRespon
     body: JSON.stringify(req),
   });
   if (!res.ok) {
+    let text = "";
     try {
       const data = await res.json();
-      throw new Error(data?.error || JSON.stringify(data));
+      text = data?.error || JSON.stringify(data);
     } catch {
-      throw new Error("Failed to start generation");
+      try { text = await res.text(); } catch {}
     }
+    throw new Error(text || `HTTP ${res.status}`);
   }
   return res.json();
 }
